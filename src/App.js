@@ -3,27 +3,63 @@ import GAListener from 'components/GAListener';
 import { EmptyLayout, LayoutRoute, MainLayout } from 'components/Layout';
 import PageSpinner from 'components/PageSpinner';
 import AuthPage from 'pages/AuthPage';
-import React from 'react';
+import React, {lazy} from 'react';
 import componentQueries from 'react-component-queries';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import './styles/reduction.scss';
 
-const AlertPage = React.lazy(() => import('pages/AlertPage'));
-const AuthModalPage = React.lazy(() => import('pages/AuthModalPage'));
-const BadgePage = React.lazy(() => import('pages/BadgePage'));
-const ButtonGroupPage = React.lazy(() => import('pages/ButtonGroupPage'));
-const ButtonPage = React.lazy(() => import('pages/ButtonPage'));
-const CardPage = React.lazy(() => import('pages/CardPage'));
-const ChartPage = React.lazy(() => import('pages/ChartPage'));
-const DashboardPage = React.lazy(() => import('pages/DashboardPage'));
-const DropdownPage = React.lazy(() => import('pages/DropdownPage'));
-const FormPage = React.lazy(() => import('pages/FormPage'));
-const InputGroupPage = React.lazy(() => import('pages/InputGroupPage'));
-const ModalPage = React.lazy(() => import('pages/ModalPage'));
-const ProgressPage = React.lazy(() => import('pages/ProgressPage'));
-const TablePage = React.lazy(() => import('pages/TablePage'));
-const TypographyPage = React.lazy(() => import('pages/TypographyPage'));
-const WidgetPage = React.lazy(() => import('pages/WidgetPage'));
+
+const lazyWithRetry = (componentImport) =>
+  lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.localStorage.getItem(
+        'page-has-been-force-refreshed'
+      ) || 'false'
+    );
+
+    try {
+      const component = await componentImport();
+
+      window.localStorage.setItem(
+        'page-has-been-force-refreshed',
+        'false'
+      );
+
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        // Assuming that the user is not on the latest version of the application.
+        // Let's refresh the page immediately.
+        window.localStorage.setItem(
+          'page-has-been-force-refreshed',
+          'true'
+        );
+        return window.location.reload();
+      }
+
+      // The page has already been reloaded
+      // Assuming that user is already using the latest version of the application.
+      // Let's let the application crash and raise the error.
+      throw error;
+    }
+  });
+
+const AlertPage = lazyWithRetry(() => import('pages/AlertPage'));
+const AuthModalPage = lazyWithRetry(() => import('pages/AuthModalPage'));
+const BadgePage = lazyWithRetry(() => import('pages/BadgePage'));
+const ButtonGroupPage = lazyWithRetry(() => import('pages/ButtonGroupPage'));
+const ButtonPage = lazyWithRetry(() => import('pages/ButtonPage'));
+const CardPage = lazyWithRetry(() => import('pages/CardPage'));
+const ChartPage = lazyWithRetry(() => import('pages/ChartPage'));
+const DashboardPage = lazyWithRetry(() => import('pages/DashboardPage'));
+const DropdownPage = lazyWithRetry(() => import('pages/DropdownPage'));
+const FormPage = lazyWithRetry(() => import('pages/FormPage'));
+const InputGroupPage = lazyWithRetry(() => import('pages/InputGroupPage'));
+const ModalPage = lazyWithRetry(() => import('pages/ModalPage'));
+const ProgressPage = lazyWithRetry(() => import('pages/ProgressPage'));
+const TablePage = lazyWithRetry(() => import('pages/TablePage'));
+const TypographyPage = lazyWithRetry(() => import('pages/TypographyPage'));
+const WidgetPage = lazyWithRetry(() => import('pages/WidgetPage'));
 
 const getBasename = () => {
   return `/${process.env.PUBLIC_URL.split('/').pop()}`;

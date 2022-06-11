@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import ECharts, { EChartsReactProps } from 'echarts-for-react';
+import { set } from 'react-ga';
 
 export class Monthly_PS_Chart extends Component{
     constructor(props){
@@ -32,7 +33,10 @@ export class Monthly_PS_Chart extends Component{
             {
                 type: 'category',
                 axisTick: {alignWithLabel: true},
-                data: this.aa
+                data: this.aa,
+                axisLabel : {
+                  fontSize: '10'
+                }
             }
         ],
         yAxis: [
@@ -48,7 +52,8 @@ export class Monthly_PS_Chart extends Component{
                 }
             },
             axisLabel: {
-                formatter: '{value}'
+                formatter: '{value}',
+                fontSize: '10'
             }
             },
             {
@@ -63,7 +68,8 @@ export class Monthly_PS_Chart extends Component{
                 }
             },
             axisLabel: {
-                formatter: '{value}'
+                formatter: '{value}',
+                fontSize: '9'
             }
         }
     ],
@@ -100,16 +106,9 @@ export class Monthly_PS_Chart extends Component{
       
               this.setState({orderMonth : order, purchase:purc, sales:sal})
       
-            //   console.log("this.state.orderMonth :", this.state.orderMonth)
-            //   console.log("this.state.purchase :", this.state.purchase)
-            //   console.log("this.state.sales :", this.state.sales)
-
-
               this.options11.xAxis[0].data = order
               this.options11.series[0].data = purc
               this.options11.series[1].data = sal
-            //   console.log("this.state.option", this.options11)
-
       
               this.setState({option : this.options11})
           })
@@ -162,6 +161,9 @@ export class CohortChart extends Component{
         yAxis: {
           type: 'category',
           data: this.bb,
+          axisLabel: {
+            fontSize: '8',
+          },
           axisTick: {alignWithLabel: true},
           splitArea: {
             show: true
@@ -170,6 +172,7 @@ export class CohortChart extends Component{
         visualMap: {
           min: 0,
           max: 1,
+          fontSize: "8",
           calculable: true,
           orient: 'horizontal',
           left: 'center',
@@ -180,7 +183,8 @@ export class CohortChart extends Component{
             type: 'heatmap',
             data: this.cc,
             label: {
-              show: true
+              show: true,
+              fontSize: "8"
             },
             emphasis: {
               itemStyle: {
@@ -257,5 +261,55 @@ export class CohortChart extends Component{
             />
           );
     }
-}
+};
 
+
+export function Profit(){
+  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+    method: "POST",
+    headers: {
+    "Content-Type" : "application/json",
+    },
+    body: "Monthly_PS_sql",
+  })
+  .then( (response)=> response.json() )
+  .then( (rdata)=>{
+    //   console.log("rdata : ", rdata)
+      let order = rdata.map(data => new Date(data['Order Month']))
+      let sal = rdata.map(data => data['Sales'])
+
+      var m_totalSales = sal.reduce((x, y) => x + y);
+      // console.log("m_totalSales : ", m_totalSales);
+
+      var maxYear = new Date(Math.max.apply(null, order));
+      maxYear = maxYear.getFullYear()
+      // console.log("maxYear : ", maxYear)
+     
+      var thisYearSales = []
+      order.map((v,i) => {
+        if(v.getFullYear() === maxYear){
+          thisYearSales.push(sal[i])
+        }
+      })
+
+      var m_thisYearTotalSales = thisYearSales.reduce((x, y) => x + y);
+
+      var m_totalSalesPercent = m_thisYearTotalSales / m_totalSales
+
+      console.log("m_thisYearTotalSales : ", m_thisYearTotalSales)
+      console.log("m_totalSales : ",m_totalSales)
+      console.log("m_totalSalesPercent : ",m_totalSalesPercent)
+      
+      m_totalSales = Math.round(m_totalSales / 1000000).toString() + "M"
+      m_thisYearTotalSales = Math.round(m_thisYearTotalSales / 1000000).toString() + "M"
+      m_totalSalesPercent = Math.round(m_totalSalesPercent)
+
+
+
+    return {
+        totalSales : m_totalSales,
+        thisYearTotalSales : m_thisYearTotalSales,
+        totalSalesPercent : m_totalSalesPercent
+    }
+  })
+};

@@ -7,7 +7,7 @@ import SupportTicket from 'components/SupportTicket';
 import UserProgressTable from 'components/UserProgressTable';
 import { IconWidget, NumberWidget } from 'components/Widget';
 import { getStackLineChart, stackLineChartOptions} from 'demos/chartjs';
-import {Monthly_PS_Chart, CohortChart} from '../demos/echartjs2'
+import {Monthly_PS_Chart, CohortChart, Profit} from '../demos/echartjs2'
 import {
   avatarsData,
   chartjs,
@@ -54,9 +54,30 @@ const lastWeek = new Date(
 
 
 class DashboardPage extends React.Component {
+  constructor(props){
+    super(props)
+
+    this.state = {
+      sales_loading : true,
+      totalSales : 0,
+      thisYearTotalSales : 0,
+      totalSalesPercent : 0,
+    }
+  }
+
    componentDidMount() {
     // this is needed, because InfiniteCalendar forces window scroll
     window.scrollTo(0, 0);
+
+    Profit().then((value) => {
+      if(this.state.sales_loading){
+        this.setState({totalSales : value.totalSales,
+           thisYearTotalSales : value.thisYearTotalSales,
+           totalSalesPercent : value.totalSalesPercent,
+           sales_loading : false})
+      }
+      console.log("this.state.sales_loading : ", this.state.sales_loading)
+    })
   }
 
   render() {
@@ -74,13 +95,14 @@ class DashboardPage extends React.Component {
             <NumberWidget
               title="Total Profit"
               subtitle="This month"
-              number="9.8k"
+              number= {this.state.totalSales}
               color="secondary"
               progress={{
-                value: 75,
+                value: this.state.totalSalesPercent,
                 label: 'Last month',
               }}
             />
+            
           </Col>
 
           <Col lg={3} md={6} sm={6} xs={12}>
@@ -138,6 +160,7 @@ class DashboardPage extends React.Component {
               <CardHeader>Purchase</CardHeader>
               <CardBody>
                   <Monthly_PS_Chart />
+                  
               </CardBody>
               {/* <ListGroup flush>
                 <ListGroupItem>
