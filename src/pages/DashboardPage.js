@@ -7,7 +7,6 @@ import SupportTicket from 'components/SupportTicket';
 import UserProgressTable from 'components/UserProgressTable';
 import { IconWidget, NumberWidget } from 'components/Widget';
 import { getStackLineChart, stackLineChartOptions} from 'demos/chartjs';
-import {Monthly_PS_Chart, CohortChart, Profit} from '../demos/echartjs2'
 import {
   avatarsData,
   chartjs,
@@ -44,6 +43,13 @@ import {
   Row,
 } from 'reactstrap';
 import { getColor } from 'utils/colors';
+import {
+  Monthly_PS_Chart,
+  CohortChart,
+  Profit,
+  Category_cumPurchase,
+  Segment_orderCount
+} from '../demos/echartjs2'
 
 const today = new Date();
 const lastWeek = new Date(
@@ -76,7 +82,7 @@ class DashboardPage extends React.Component {
            totalSalesPercent : value.totalSalesPercent,
            sales_loading : false})
       }
-      console.log("this.state.sales_loading : ", this.state.sales_loading)
+      // console.log("this.state.sales_loading : ", this.state.sales_loading)
     })
   }
 
@@ -93,13 +99,13 @@ class DashboardPage extends React.Component {
         <Row>
           <Col lg={3} md={6} sm={6} xs={12}>
             <NumberWidget
-              title="Total Profit"
-              subtitle="This month"
+              title="Total Sales"
+              subtitle="Total Year"
               number= {this.state.totalSales}
               color="secondary"
               progress={{
                 value: this.state.totalSalesPercent,
-                label: 'Last month',
+                label: 'Latest Year',
               }}
             />
             
@@ -185,7 +191,7 @@ class DashboardPage extends React.Component {
         </Row>
 
         <CardGroup style={{ marginBottom: '1rem' }}>
-          <IconWidget
+          {/* <IconWidget
             bgColor="white"
             inverse={false}
             icon={MdThumbUp}
@@ -205,15 +211,15 @@ class DashboardPage extends React.Component {
             icon={MdShare}
             title="30+ Shares"
             subtitle="New Shares"
-          />
+          /> */}
         </CardGroup>
 
         <Row>
           <Col md="6" sm="12" xs="12">
             <Card>
-              <CardHeader>New Products</CardHeader>
+              <CardHeader>Category_cumPurchase</CardHeader>
               <CardBody>
-                {productsData.map(
+                {/* {productsData.map(
                   ({ id, image, title, description, right }) => (
                     <ProductMedia
                       key={id}
@@ -223,16 +229,17 @@ class DashboardPage extends React.Component {
                       right={right}
                     />
                   ),
-                )}
+                )} */}
+                <Category_cumPurchase/>
               </CardBody>
             </Card>
           </Col>
 
           <Col md="6" sm="12" xs="12">
             <Card>
-              <CardHeader>New Users</CardHeader>
+              <CardHeader>Segment Order Category</CardHeader>
               <CardBody>
-                <UserProgressTable
+                {/* <UserProgressTable
                   headers={[
                     <MdPersonPin size={25} />,
                     'name',
@@ -241,7 +248,8 @@ class DashboardPage extends React.Component {
                     '%',
                   ]}
                   usersData={userProgressTableData}
-                />
+                /> */}
+                <Segment_orderCount/>
               </CardBody>
             </Card>
           </Col>

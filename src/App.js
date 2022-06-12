@@ -12,28 +12,19 @@ import './styles/reduction.scss';
 const lazyWithRetry = (componentImport) =>
   lazy(async () => {
     const pageHasAlreadyBeenForceRefreshed = JSON.parse(
-      window.localStorage.getItem(
-        'page-has-been-force-refreshed'
-      ) || 'false'
-    );
+      window.localStorage.getItem('page-has-been-force-refreshed') || 'false');
 
     try {
       const component = await componentImport();
 
-      window.localStorage.setItem(
-        'page-has-been-force-refreshed',
-        'false'
-      );
+      window.localStorage.setItem('page-has-been-force-refreshed', 'false');
 
       return component;
     } catch (error) {
       if (!pageHasAlreadyBeenForceRefreshed) {
         // Assuming that the user is not on the latest version of the application.
         // Let's refresh the page immediately.
-        window.localStorage.setItem(
-          'page-has-been-force-refreshed',
-          'true'
-        );
+        window.localStorage.setItem('page-has-been-force-refreshed', 'true');
         return window.location.reload();
       }
 
@@ -62,6 +53,7 @@ const TypographyPage = lazyWithRetry(() => import('pages/TypographyPage'));
 const WidgetPage = lazyWithRetry(() => import('pages/WidgetPage'));
 
 const getBasename = () => {
+  // console.log("`/${process.env.PUBLIC_URL.split('/').pop()}` : ", `/${process.env.PUBLIC_URL.split('/').pop()}`)
   return `/${process.env.PUBLIC_URL.split('/').pop()}`;
 };
 
