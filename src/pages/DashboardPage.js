@@ -48,8 +48,9 @@ import {
   CohortChart,
   Profit,
   Category_cumPurchase,
-  Segment_orderCount
-} from '../demos/echartjs2'
+  Segment_orderCount,
+  NewUser,
+} from '../demos/echartjs2';
 
 const today = new Date();
 const lastWeek = new Date(
@@ -68,6 +69,10 @@ class DashboardPage extends React.Component {
       totalSales : 0,
       thisYearTotalSales : 0,
       totalSalesPercent : 0,
+
+      user_loading : true,
+      thisYearCnt : 0,
+      percent : 0,
     }
   }
 
@@ -79,12 +84,21 @@ class DashboardPage extends React.Component {
       if(this.state.sales_loading){
         this.setState({totalSales : value.totalSales,
            thisYearTotalSales : value.thisYearTotalSales,
-           totalSalesPercent : value.totalSalesPercent,
+           prevYearSales : value.prevYearSales,
+           SalesPercent : value.SalesPercent,
            sales_loading : false})
       }
       // console.log("this.state.sales_loading : ", this.state.sales_loading)
     })
-  }
+
+    NewUser().then((value) => {
+      this.setState({
+        percent : value.percent,
+        thisYearCnt : value.thisYearCnt,
+        user_loading : false
+    })
+  })
+}
 
   render() {
     const primaryColor = getColor('primary');
@@ -100,12 +114,12 @@ class DashboardPage extends React.Component {
           <Col lg={3} md={6} sm={6} xs={12}>
             <NumberWidget
               title="Total Sales"
-              subtitle="Total Year"
+              subtitle='Prev Year'
               number= {this.state.totalSales}
               color="secondary"
               progress={{
-                value: this.state.totalSalesPercent,
-                label: 'Latest Year',
+                value: this.state.SalesPercent,
+                label: "This Year",
               }}
             />
             
@@ -113,13 +127,13 @@ class DashboardPage extends React.Component {
 
           <Col lg={3} md={6} sm={6} xs={12}>
             <NumberWidget
-              title="Monthly Visitors"
-              subtitle="This month"
-              number="5,400"
+              title="This Year New Users"
+              subtitle="Prev Year"
+              number= {this.state.thisYearCnt}
               color="secondary"
               progress={{
-                value: 45,
-                label: 'Last month',
+                value: this.state.percent,
+                label: 'This Year',
               }}
             />
           </Col>
@@ -219,17 +233,6 @@ class DashboardPage extends React.Component {
             <Card>
               <CardHeader>Category_cumPurchase</CardHeader>
               <CardBody>
-                {/* {productsData.map(
-                  ({ id, image, title, description, right }) => (
-                    <ProductMedia
-                      key={id}
-                      image={image}
-                      title={title}
-                      description={description}
-                      right={right}
-                    />
-                  ),
-                )} */}
                 <Category_cumPurchase/>
               </CardBody>
             </Card>
@@ -239,16 +242,6 @@ class DashboardPage extends React.Component {
             <Card>
               <CardHeader>Segment Order Category</CardHeader>
               <CardBody>
-                {/* <UserProgressTable
-                  headers={[
-                    <MdPersonPin size={25} />,
-                    'name',
-                    'date',
-                    'participation',
-                    '%',
-                  ]}
-                  usersData={userProgressTableData}
-                /> */}
                 <Segment_orderCount/>
               </CardBody>
             </Card>
@@ -341,7 +334,7 @@ class DashboardPage extends React.Component {
         </Row>
 
         <Row>
-          <Col lg="4" md="12" sm="12" xs="12">
+          {/* <Col lg="4" md="12" sm="12" xs="12">
             <InfiniteCalendar
               selected={today}
               minDate={lastWeek}
@@ -363,21 +356,21 @@ class DashboardPage extends React.Component {
                 weekdayColor: primaryColor,
               }}
             />
-          </Col>
+          </Col> */}
 
-          <Col lg="8" md="12" sm="12" xs="12">
+          <Col>
             <Card inverse className="bg-gradient-primary">
               <CardHeader className="bg-gradient-primary">
                 Map with bubbles
               </CardHeader>
               <CardBody>
-                <MapWithBubbles />
+                <TodosCard />
               </CardBody>
             </Card>
           </Col>
         </Row>
 
-        <CardDeck style={{ marginBottom: '1rem' }}>
+        {/* <CardDeck style={{ marginBottom: '1rem' }}>
           <Card body style={{ overflowX: 'auto','paddingBottom':'15px','height': 'fit-content','paddingTop': 'inherit'}}>
             <HorizontalAvatarList
               avatars={avatarsData}
@@ -392,9 +385,9 @@ class DashboardPage extends React.Component {
               reversed
             />
           </Card>
-        </CardDeck>
+        </CardDeck> */}
 
-        <Row>
+        {/* <Row>
           <Col lg="4" md="12" sm="12" xs="12">
             <AnnouncementCard
               color="gradient-secondary"
@@ -431,7 +424,7 @@ class DashboardPage extends React.Component {
           <Col lg="4" md="12" sm="12" xs="12">
             <TodosCard todos={todosData} />
           </Col>
-        </Row>
+        </Row> */}
       </Page>
     );
   }

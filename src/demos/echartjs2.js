@@ -228,6 +228,8 @@ export class CohortChart extends Component{
             let cnt = 0
           
             const uni_qDiff_copy =  uni_qDiff.slice();
+            console.log("uni_qDiff_copy : ",uni_qDiff_copy)
+            console.log("uni_fp : ",uni_fp)
           
             for (var i=uni_fp.length-1; i>=-1; i--){
               for (var j in uni_qDiff_copy){
@@ -275,45 +277,77 @@ export function Profit(){
   })
   .then( (response)=> response.json() )
   .then( (rdata)=>{
-    //   console.log("rdata : ", rdata)
       let order = rdata.map(data => new Date(data['Order Month']))
       let sal = rdata.map(data => data['Sales'])
 
-      var m_totalSales = sal.reduce((x, y) => x + y);
-      // console.log("m_totalSales : ", m_totalSales);
+      var totalSales = sal.reduce((x, y) => x + y);
 
       var maxYear = new Date(Math.max.apply(null, order));
       maxYear = maxYear.getFullYear()
-      // console.log("maxYear : ", maxYear)
      
       var thisYearSales = []
+      var prevYearSales = []
       order.map((v,i) => {
         if(v.getFullYear() === maxYear){
           thisYearSales.push(sal[i])
+        }else if(v.getFullYear() === maxYear-1){
+          prevYearSales.push(sal[i])
         }
       })
 
-      var m_thisYearTotalSales = thisYearSales.reduce((x, y) => x + y);
+      var thisYearTotalSales = thisYearSales.reduce((x, y) => x + y);
+      var prevYearTotalSales = prevYearSales.reduce((x, y) => x + y);
 
-      var m_totalSalesPercent = m_thisYearTotalSales / m_totalSales
+      var SalesPercent = thisYearTotalSales / prevYearTotalSales
 
-      // console.log("m_thisYearTotalSales : ", m_thisYearTotalSales)
-      // console.log("m_totalSales : ",m_totalSales)
-      // console.log("m_totalSalesPercent : ",m_totalSalesPercent)
-      
-      m_totalSales = Math.round(m_totalSales / 1000000).toString() + "M"
-      m_thisYearTotalSales = Math.round(m_thisYearTotalSales / 1000000).toString() + "M"
-      m_totalSalesPercent = Math.round(m_totalSalesPercent)
+      totalSales = Math.round(totalSales / 1000000).toString() + "M"
+      thisYearTotalSales = Math.round(thisYearTotalSales / 1000000).toString() + "M"
+      SalesPercent = Math.round(SalesPercent) * 100
 
 
 
     return {
-        totalSales : m_totalSales,
-        thisYearTotalSales : m_thisYearTotalSales,
-        totalSalesPercent : m_totalSalesPercent
+        totalSales : totalSales,
+        thisYearTotalSales : thisYearTotalSales,
+        prevYearSales : prevYearSales,
+        SalesPercent : SalesPercent
     }
   })
 };
+
+// NewUser Percent 
+export function NewUser(){
+  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+    method: "POST",
+    headers: {
+    "Content-Type" : "application/json",
+    },
+    body: "First_Purchase_sql",
+  })
+  .then( (response)=> response.json() )
+  .then( (rdata)=>{
+    let year = rdata.map(data => data['FirstPurchaseDate'])
+
+    var prevYearCnt = 0
+    var thisYearCnt = 0
+    year.forEach(val => {
+      if(val == "2013"){
+        prevYearCnt += 1
+      }else{
+        thisYearCnt += 1
+      }
+    })
+    console.log("prevYearCnt : ", prevYearCnt)
+    console.log("thisYearCnt : ", thisYearCnt)
+
+    var percent = Math.round((thisYearCnt / prevYearCnt) * 100)
+    console.log("percent : ", percent)
+    return {
+      percent : percent,
+      thisYearCnt : thisYearCnt,
+    }
+  })
+}
 
 // Category cumPurchase
 export class Category_cumPurchase extends Component{
@@ -396,6 +430,7 @@ export class Category_cumPurchase extends Component{
 
 };
 
+// Segment_Category_subCategory OrderCount by SunBurst Charts
 export class Segment_orderCount extends Component{
   constructor(props){
     super(props)
@@ -461,7 +496,6 @@ export class Segment_orderCount extends Component{
     '#038549',
     '#28b44b',
   ];
-
 
   data = [
     {
@@ -541,7 +575,6 @@ export class Segment_orderCount extends Component{
     }
   };
   
-
   componentDidMount()
   {
         fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
@@ -603,14 +636,13 @@ export class Segment_orderCount extends Component{
               }
             }
 
-            console.log("data : ", data)
+            // console.log("data : ", data)
             this.options11.series.data = data
 
             this.setState({option : this.options11})
         })
       }
       
-
   render(){
       return (
           <ECharts
@@ -622,7 +654,7 @@ export class Segment_orderCount extends Component{
 
   createChildren = (name, value=0) => {
     var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
-    console.log("randColor : ",randColor)
+    // console.log("randColor : ",randColor)
 
     if(value !== 0){
       var child = {

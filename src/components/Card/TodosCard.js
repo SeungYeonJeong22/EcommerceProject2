@@ -5,7 +5,7 @@ import { Card, CardImg, CardImgOverlay, CardTitle, CardText } from 'reactstrap';
 
 import Todos, { propTypes as TodosPropTypes } from 'components/Todos';
 
-import backgroundImage from 'assets/img/bg/background_1920-2.jpg';
+import backgroundImage from 'assets/img/geoGraph.png';
 
 const TodosCard = ({ image, title, subtitle, todos, ...restProps }) => {
   return (
@@ -17,7 +17,7 @@ const TodosCard = ({ image, title, subtitle, todos, ...restProps }) => {
           <CardText className="text-white">{subtitle}</CardText>
         </CardImgOverlay>
       </div>
-      <Todos todos={todos} />
+      {/* <Todos todos={todos} /> */}
     </Card>
   );
 };
@@ -31,8 +31,8 @@ TodosCard.propTypes = {
 
 TodosCard.defaultProps = {
   image: backgroundImage,
-  title: 'Tasks',
-  subtitle: 'Due soon...',
+  // title: 'Tasks',
+  // subtitle: 'Due soon...',
 };
 
 export default TodosCard;
