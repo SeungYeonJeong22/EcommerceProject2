@@ -50,6 +50,7 @@ import {
   Category_cumPurchase,
   Segment_orderCount,
   NewUser,
+  SankeyChart,
 } from '../demos/echartjs2';
 
 const today = new Date();
@@ -249,6 +250,19 @@ class DashboardPage extends React.Component {
         </Row>
 
         <Row>
+          <Col>
+            <Card>
+              <CardHeader>SankeyChart</CardHeader>
+              <CardBody>
+                <SankeyChart />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+
+
+
+        {/* <Row>
           <Col lg={4} md={4} sm={12} xs={12}>
             <Card>
               <Line
@@ -270,8 +284,9 @@ class DashboardPage extends React.Component {
                 className="text-primary"
                 style={{ position: 'absolute' }}
               >
+                <SankeyChart />
                 <CardTitle>
-                  <MdInsertChart /> Sales
+                  <MdInsertChart /> SankeyChart
                 </CardTitle>
               </CardBody>
             </Card>
@@ -334,7 +349,7 @@ class DashboardPage extends React.Component {
         </Row>
 
         <Row>
-          {/* <Col lg="4" md="12" sm="12" xs="12">
+          <Col lg="4" md="12" sm="12" xs="12">
             <InfiniteCalendar
               selected={today}
               minDate={lastWeek}
@@ -356,13 +371,14 @@ class DashboardPage extends React.Component {
                 weekdayColor: primaryColor,
               }}
             />
-          </Col> */}
+            </Col> */}
 
+        <Row>
           <Col>
             <Card inverse className="bg-gradient-primary">
               <CardHeader className="bg-gradient-primary">
                 Map with bubbles
-              </CardHeader>
+              </CardHeader> 
               <CardBody>
                 <TodosCard />
               </CardBody>

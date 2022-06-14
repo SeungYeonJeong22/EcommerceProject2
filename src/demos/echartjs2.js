@@ -1,6 +1,5 @@
 import React, { Component, useState } from 'react';
 import ECharts, { EChartsReactProps } from 'echarts-for-react';
-import { set } from 'react-ga';
 
 //Monthly_purchase_sales_chart
 export class Monthly_PS_Chart extends Component{
@@ -228,8 +227,8 @@ export class CohortChart extends Component{
             let cnt = 0
           
             const uni_qDiff_copy =  uni_qDiff.slice();
-            console.log("uni_qDiff_copy : ",uni_qDiff_copy)
-            console.log("uni_fp : ",uni_fp)
+            // console.log("uni_qDiff_copy : ",uni_qDiff_copy)
+            // console.log("uni_fp : ",uni_fp)
           
             for (var i=uni_fp.length-1; i>=-1; i--){
               for (var j in uni_qDiff_copy){
@@ -337,11 +336,11 @@ export function NewUser(){
         thisYearCnt += 1
       }
     })
-    console.log("prevYearCnt : ", prevYearCnt)
-    console.log("thisYearCnt : ", thisYearCnt)
+    // console.log("prevYearCnt : ", prevYearCnt)
+    // console.log("thisYearCnt : ", thisYearCnt)
 
     var percent = Math.round((thisYearCnt / prevYearCnt) * 100)
-    console.log("percent : ", percent)
+    // console.log("percent : ", percent)
     return {
       percent : percent,
       thisYearCnt : thisYearCnt,
@@ -670,5 +669,200 @@ export class Segment_orderCount extends Component{
     }
 
     return child
+  }
+};
+
+export class SankeyChart extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+        country     :[],
+        cntCust_ID  :[],
+        segment     :[],
+        sumQuantity :[],
+        category    :[],
+        option : {}
+    }
+  }
+
+  colors = [
+    '#da0d68',
+    '#975e6d',
+    '#e0719c',
+    '#f99e1c',
+    '#ef5a78',
+    '#f7f1bd',
+    '#da1d23',
+    '#dd4c51',
+    '#3e0317',
+    '#e62969',
+    '#6569b0',
+    '#ef2d36',
+    '#c94a44',
+    '#b53b54',
+    '#a5446f',
+    '#dd4c51',
+    '#f2684b',
+    '#e73451',
+    '#e65656',
+    '#f89a1c',
+    '#aeb92c',
+    '#4eb849',
+    '#f68a5c',
+    '#baa635',
+    '#f7a128',
+    '#f26355',
+    '#e2631e',
+    '#fde404',
+    '#7eb138',
+    '#ebb40f',
+    '#e1c315',
+    '#9ea718',
+    '#94a76f',
+    '#d0b24f',
+    '#8eb646',
+    '#faef07',
+    '#c1ba07',
+    '#b09733',
+    '#8f1c53',
+    '#b34039',
+    '#ba9232',
+    '#8b6439',
+    '#187a2f',
+    '#a2b029',
+    '#718933',
+    '#3aa255',
+    '#a2bb2b',
+    '#62aa3c',
+    '#03a653',
+    '#038549',
+    '#28b44b',
+  ];
+
+  data = []
+  options11 = {
+    title: {
+      left: 'center'
+    },
+    backgroundColor: '#FFFFFF',
+    series: [
+      {
+        type: 'sankey',
+        left: 50.0,
+        top: 20.0,
+        right: 150.0,
+        bottom: 25.0,
+        data: 0,
+        links: 0
+      }
+    ]          
+  };
+
+  componentDidMount()
+  {
+    fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+      method: "POST",
+      headers: {
+      "Content-Type" : "application/json",
+      },
+      body: "SankeyChartData_sql",
+    })
+    .then( (response)=> response.json() )
+    .then( (rdata)=>{
+        let market     = rdata.map(data => data['Market'])
+        let cntCust_ID  = rdata.map(data => data['cntCust_ID'])
+        let segment     = rdata.map(data => data['Segment'])
+        let sumQuantity = rdata.map(data => data['sumQuantity'])
+        let category    = rdata.map(data => data['sub-category'])
+
+        let createD = this.createData(market, segment, category);
+        console.log("createD : ", createD)
+        let createL = this.createLink(market, segment, category, cntCust_ID, sumQuantity)
+        console.log("createL : ", createL)
+
+        this.options11.series[0].data=createD
+        this.options11.series[0].links=createL
+
+        this.setState({market:market, cntCust_ID:cntCust_ID, segment:segment, sumQuantity:sumQuantity, category:category})
+        
+        this.setState({option : this.options11})
+    })
+  }
+
+  createData = (market=null, segment=null, category=null) => {
+    var t = new Set(market)
+    market = [...t];
+
+    var t = new Set(segment)
+    segment = [...t];
+
+    var t = new Set(category)
+    category = [...t];
+
+    var data = []
+    for(var i=0; i < market.length; i++){
+      var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+      data.push({
+        name: market[i],
+        itemStyle:{
+          color: randColor,
+          borderColor: randColor
+        }
+      })
+    }
+
+    for(var i=0; i < segment.length; i++){
+      var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];      
+      data.push({
+        name: segment[i],
+        itemStyle:{
+          color: randColor,
+          borderColor: randColor
+        }
+      })
+    }
+
+    for(var i=0; i < category.length; i++){
+      var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+      data.push({
+        name: category[i],
+        itemStyle:{
+          color: randColor,
+          borderColor: randColor
+        }
+      })
+    }
+
+    return data
+  }
+
+  createLink = (market=null, segment=null, category=null, cntCust_ID=0, sumQuantity=0) => {
+    var links = []
+    for(var i=0; i<cntCust_ID.length; i++){
+      links.push({
+        source: market[i],
+        target: segment[i],
+        value: cntCust_ID[i]
+      }) 
+    }
+
+    for(var i=0; i<sumQuantity.length; i++){
+      links.push({
+        source: segment[i],
+        target: category[i],
+        value: sumQuantity[i]
+      })
+    }
+
+    return links
+  }
+
+  render(){
+      return (
+        <ECharts
+                option={this.state.option}
+          opts={{ renderer: 'svg', width: 'auto', height: 'auto' }}
+        />
+    );
   }
 };
