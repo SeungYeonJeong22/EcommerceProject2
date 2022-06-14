@@ -65,10 +65,10 @@ const sidebarBackground = {
   // { to: '/modals', name: 'modals', exact: false, Icon: MdViewDay },
 // ];
 
-// const navContents = [
-//   { to: '/typography', name: 'typography', exact: false, Icon: MdTextFields },
-//   { to: '/tables', name: 'tables', exact: false, Icon: MdBorderAll },
-// ];
+const navContents = [
+  // { to: '/typography', name: 'typography', exact: false, Icon: MdTextFields },
+  { to: '/tables', name: 'tables', exact: false, Icon: MdBorderAll },
+];
 
 // const pageContents = [
 //   { to: '/login', name: 'login / signup', exact: false, Icon: MdAccountCircle },
@@ -203,9 +203,9 @@ class Sidebar extends React.Component {
                   }}
                 />
               </BSNavLink>
-            </NavItem>
-            <Collapse isOpen={this.state.isOpenContents}>
-              {navContents.map(({ to, name, exact, Icon }, index) => (
+            </NavItem> */}
+             <Collapse isOpen={this.state.isOpenContents}>
+               {navContents.map(({ to, name, exact, Icon }, index) => (
                 <NavItem key={index} className={bem.e('nav-item')}>
                   <BSNavLink
                     id={`navItem-${name}-${index}`}
@@ -222,7 +222,7 @@ class Sidebar extends React.Component {
               ))}
             </Collapse>
 
-            <NavItem
+            {/* <NavItem
               className={bem.e('nav-item')}
               onClick={this.handleClick('Pages')}
             >
@@ -243,8 +243,8 @@ class Sidebar extends React.Component {
                   }}
                 />
               </BSNavLink>
-            </NavItem>
-            <Collapse isOpen={this.state.isOpenPages}>
+            </NavItem> */}
+            {/* <Collapse isOpen={this.state.isOpenPages}>
               {pageContents.map(({ to, name, exact, Icon }, index) => (
                 <NavItem key={index} className={bem.e('nav-item')}>
                   <BSNavLink
