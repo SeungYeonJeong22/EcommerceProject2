@@ -1,6 +1,109 @@
 import React, { Component, useState } from 'react';
 import ECharts, { EChartsReactProps } from 'echarts-for-react';
 
+// Profit
+export function Profit(){
+  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+    method: "POST",
+    headers: {
+    "Content-Type" : "application/json",
+    },
+    body: "Monthly_PS_sql",
+  })
+  .then( (response)=> response.json() )
+  .then( (rdata)=>{
+      let order = rdata.map(data => new Date(data['Order Month']))
+      let sal = rdata.map(data => data['Sales'])
+
+      var totalSales = sal.reduce((x, y) => x + y);
+
+      var maxYear = new Date(Math.max.apply(null, order));
+      maxYear = maxYear.getFullYear()
+     
+      var thisYearSales = []
+      var prevYearSales = []
+      order.map((v,i) => {
+        if(v.getFullYear() === maxYear){
+          thisYearSales.push(sal[i])
+        }else if(v.getFullYear() === maxYear-1){
+          prevYearSales.push(sal[i])
+        }
+      })
+
+      var thisYearTotalSales = thisYearSales.reduce((x, y) => x + y);
+      var prevYearTotalSales = prevYearSales.reduce((x, y) => x + y);
+
+      var SalesPercent = thisYearTotalSales / prevYearTotalSales
+
+      totalSales = Math.round(totalSales / 1000000).toString() + "M"
+      thisYearTotalSales = Math.round(thisYearTotalSales / 1000000).toString() + "M"
+      SalesPercent = Math.round(SalesPercent* 100) 
+
+
+
+    return {
+        totalSales : totalSales,
+        thisYearTotalSales : thisYearTotalSales,
+        prevYearSales : prevYearSales,
+        SalesPercent : SalesPercent
+    }
+  })
+};
+
+// NewUser Percent 
+export function NewUser(){
+  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+    method: "POST",
+    headers: {
+    "Content-Type" : "application/json",
+    },
+    body: "First_Purchase_sql",
+  })
+  .then( (response)=> response.json() )
+  .then( (rdata)=>{
+    let year = rdata.map(data => data['FirstPurchaseDate'])
+
+    var prevYearCnt = 0
+    var thisYearCnt = 0
+    year.forEach(val => {
+      if(val == "2013"){
+        prevYearCnt += 1
+      }else{
+        thisYearCnt += 1
+      }
+    })
+
+    var percent = Math.round((thisYearCnt / prevYearCnt) * 100)
+    return {
+      percent : percent,
+      thisYearCnt : thisYearCnt,
+    }
+  })
+}
+
+// purchaseCount
+export function purchaseCount(){
+  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+    method: "POST",
+    headers: {
+    "Content-Type" : "application/json",
+    },
+    body: "purchaseCntData_sql",
+  })
+  .then( (response)=> response.json() )
+  .then( (rdata)=>{
+      let pct2013 = rdata.map(data => data['purchaseCnt_2013'])
+      let pct2014 = rdata.map(data => data['purchaseCnt_2014'])
+
+      let pctPercent = Math.round(pct2014/pct2013*100)
+
+    return {
+      pct2014 : pct2014,
+      pctPercent : pctPercent
+    }
+  })
+};
+
 //Monthly_purchase_sales_chart
 export class Monthly_PS_Chart extends Component{
     constructor(props){
@@ -122,6 +225,129 @@ export class Monthly_PS_Chart extends Component{
             />
           );
     }
+}
+
+// subcategory_sales_purchase
+export class SubCategory_Sales_Chart extends Component{
+  constructor(props){
+      super(props)
+      this.state = {
+          orderMonth : ['11','22','33','44','55'],
+          purchase : [1,2,3,4,5],
+          sales : [6,7,8,9,0],
+          option : {}
+      }
+  }
+
+  aa = []
+  bb = []
+  cc =[]
+
+  colors = ['#5470C6', '#91CC75'];
+  options11 = {
+      color: this.colors,
+      tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+              type: 'cross'
+          }
+      },
+      legend: {
+          data: ['Purchase Count', 'Sales']
+      },
+      xAxis: [
+          {
+              type: 'category',
+              axisTick: {alignWithLabel: true},
+              data: this.aa,
+              axisLabel : {
+                fontSize: '9'
+              }
+          }
+      ],
+      yAxis: [
+          {
+          type: 'value',
+          name: 'Purchase Count',
+          position: 'right',
+          alignTicks: true,
+          axisLine: {
+              show: true,
+              lineStyle: {
+              color: this.colors[0]
+              }
+          },
+          axisLabel: {
+              formatter: '{value}',
+              fontSize: '10'
+          }
+          },
+          {
+          type: 'value',
+          name: 'Sales',
+          position: 'left',
+          alignTicks: true,
+          axisLine: {
+              show: true,
+              lineStyle: {
+              color: this.colors[1]
+              }
+          },
+          axisLabel: {
+              formatter: '{value}',
+              fontSize: '9'
+          }
+      }
+  ],
+  series: [
+      {
+          name: 'Purchase Count',
+          type: 'bar',
+          data: this.bb
+      },
+      {
+          name: 'Sales',
+          type: 'bar',
+          yAxisIndex: 1,
+          data: this.cc
+      }
+      ]
+  };
+
+  componentDidMount()
+  {
+        fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+          method: "POST",
+          headers: {
+          "Content-Type" : "application/json",
+          },
+          body: "SubCategory_Sales_sql",
+        })
+        .then( (response)=> response.json() )
+        .then( (rdata)=>{
+          //   console.log("rdata : ", rdata)
+            let order = rdata.map(data => data['품목'])
+            let purc = rdata.map(data => data['품목 구매건수'])
+            let sal = rdata.map(data => data['품목 매출'])
+    
+            this.setState({orderMonth : order, purchase:purc, sales:sal})
+    
+            this.options11.xAxis[0].data = order
+            this.options11.series[0].data = purc
+            this.options11.series[1].data = sal
+    
+            this.setState({option : this.options11})
+        })
+      }
+
+  render(){
+      return (
+          <ECharts
+                  option={this.state.option}
+            opts={{ renderer: 'svg', width: 'auto', height: 'auto' }}
+          />
+        );
+  }
 }
 
 // Cohort
@@ -265,89 +491,6 @@ export class CohortChart extends Component{
     }
 };
 
-// Profit
-export function Profit(){
-  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
-    method: "POST",
-    headers: {
-    "Content-Type" : "application/json",
-    },
-    body: "Monthly_PS_sql",
-  })
-  .then( (response)=> response.json() )
-  .then( (rdata)=>{
-      let order = rdata.map(data => new Date(data['Order Month']))
-      let sal = rdata.map(data => data['Sales'])
-
-      var totalSales = sal.reduce((x, y) => x + y);
-
-      var maxYear = new Date(Math.max.apply(null, order));
-      maxYear = maxYear.getFullYear()
-     
-      var thisYearSales = []
-      var prevYearSales = []
-      order.map((v,i) => {
-        if(v.getFullYear() === maxYear){
-          thisYearSales.push(sal[i])
-        }else if(v.getFullYear() === maxYear-1){
-          prevYearSales.push(sal[i])
-        }
-      })
-
-      var thisYearTotalSales = thisYearSales.reduce((x, y) => x + y);
-      var prevYearTotalSales = prevYearSales.reduce((x, y) => x + y);
-
-      var SalesPercent = thisYearTotalSales / prevYearTotalSales
-
-      totalSales = Math.round(totalSales / 1000000).toString() + "M"
-      thisYearTotalSales = Math.round(thisYearTotalSales / 1000000).toString() + "M"
-      SalesPercent = Math.round(SalesPercent) * 100
-
-
-
-    return {
-        totalSales : totalSales,
-        thisYearTotalSales : thisYearTotalSales,
-        prevYearSales : prevYearSales,
-        SalesPercent : SalesPercent
-    }
-  })
-};
-
-// NewUser Percent 
-export function NewUser(){
-  return fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
-    method: "POST",
-    headers: {
-    "Content-Type" : "application/json",
-    },
-    body: "First_Purchase_sql",
-  })
-  .then( (response)=> response.json() )
-  .then( (rdata)=>{
-    let year = rdata.map(data => data['FirstPurchaseDate'])
-
-    var prevYearCnt = 0
-    var thisYearCnt = 0
-    year.forEach(val => {
-      if(val == "2013"){
-        prevYearCnt += 1
-      }else{
-        thisYearCnt += 1
-      }
-    })
-    // console.log("prevYearCnt : ", prevYearCnt)
-    // console.log("thisYearCnt : ", thisYearCnt)
-
-    var percent = Math.round((thisYearCnt / prevYearCnt) * 100)
-    // console.log("percent : ", percent)
-    return {
-      percent : percent,
-      thisYearCnt : thisYearCnt,
-    }
-  })
-}
-
 // Category cumPurchase
 export class Category_cumPurchase extends Component{
   constructor(props){
@@ -360,9 +503,6 @@ export class Category_cumPurchase extends Component{
   }
 
   colors = ['#5470C6']
-
-  aa = [1,2,3]
-  bb = [4,5,6]
 
   options11 = {
     title: {
@@ -518,16 +658,6 @@ export class Segment_orderCount extends Component{
   ];
 
   options11 = {
-    // title: {
-    //   text: 'Segment Order Category',
-    //   textStyle: {
-    //     fontSize: 14,
-    //     align: 'center'
-    //   },
-    //   subtextStyle: {
-    //     align: 'center'
-    //   },
-    // },
     series: {
       type: 'sunburst',
       data: this.data,
@@ -611,14 +741,15 @@ export class Segment_orderCount extends Component{
 
             var data = []
             var cnt = 0
-            var idxCnt = 0
 
             for(var i = 0; i<segment.length; i++){
+              var idxCnt = 0
               data.push(this.createChildren(segment[i]))
 
               for(var j=0; j<category.length; j++){
                 if("children" in data[i]){
                   data[i]['children'].push(this.createChildren(category[j]))
+                  idxCnt+=1
                 }else{
                   data[i]['children'] = [this.createChildren(category[j])]
                   idxCnt+=1
@@ -635,7 +766,6 @@ export class Segment_orderCount extends Component{
               }
             }
 
-            // console.log("data : ", data)
             this.options11.series.data = data
 
             this.setState({option : this.options11})
@@ -653,7 +783,6 @@ export class Segment_orderCount extends Component{
 
   createChildren = (name, value=0) => {
     var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
-    // console.log("randColor : ",randColor)
 
     if(value !== 0){
       var child = {
@@ -676,7 +805,7 @@ export class SankeyChart extends Component{
   constructor(props){
     super(props)
     this.state = {
-        country     :[],
+        market     :[],
         cntCust_ID  :[],
         segment     :[],
         sumQuantity :[],
@@ -769,16 +898,16 @@ export class SankeyChart extends Component{
     })
     .then( (response)=> response.json() )
     .then( (rdata)=>{
-        let market     = rdata.map(data => data['Market'])
+        let market     = rdata.map(data =>  data['Market'])
         let cntCust_ID  = rdata.map(data => data['cntCust_ID'])
         let segment     = rdata.map(data => data['Segment'])
         let sumQuantity = rdata.map(data => data['sumQuantity'])
         let category    = rdata.map(data => data['sub-category'])
 
+        
+
         let createD = this.createData(market, segment, category);
-        console.log("createD : ", createD)
         let createL = this.createLink(market, segment, category, cntCust_ID, sumQuantity)
-        console.log("createL : ", createL)
 
         this.options11.series[0].data=createD
         this.options11.series[0].links=createL

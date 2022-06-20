@@ -44,14 +44,25 @@ import {
 } from 'reactstrap';
 import { getColor } from 'utils/colors';
 import {
-  Monthly_PS_Chart,
-  CohortChart,
+  // Monthly_PS_Chart,
+  // CohortChart,
   Profit,
   Category_cumPurchase,
   Segment_orderCount,
   NewUser,
   SankeyChart,
+  purchaseCount,
+  SubCategory_Sales_Chart,
 } from '../demos/echartjs2';
+import {
+  // Profit,
+  // NewUser,
+  Monthly_PS_Chart,
+  CohortChart,
+  // Category_cumPurchase,
+  // Segment_orderCount,
+  // SankeyChart,
+} from '../demos/echartjs'
 
 const today = new Date();
 const lastWeek = new Date(
@@ -74,6 +85,10 @@ class DashboardPage extends React.Component {
       user_loading : true,
       thisYearCnt : 0,
       percent : 0,
+
+      pct2014 : 0,
+      pctPercent : 0,
+      pct_loading : true,
     }
   }
 
@@ -92,13 +107,27 @@ class DashboardPage extends React.Component {
       // console.log("this.state.sales_loading : ", this.state.sales_loading)
     })
 
+
     NewUser().then((value) => {
-      this.setState({
-        percent : value.percent,
-        thisYearCnt : value.thisYearCnt,
-        user_loading : false
-    })
+      if(this.state.user_loading){
+        this.setState({
+          percent : value.percent,
+          thisYearCnt : value.thisYearCnt,
+          user_loading : false
+      })
+    }
   })
+
+  purchaseCount().then((value) => {
+    if(this.state.pct_loading){
+      this.setState({
+        pct2014     : value.pct2014,
+        pctPercent  : value.pctPercent,
+        pct_loading : false
+    })
+  }
+})
+  
 }
 
   render() {
@@ -141,13 +170,13 @@ class DashboardPage extends React.Component {
 
           <Col lg={3} md={6} sm={6} xs={12}>
             <NumberWidget
-              title="New Users"
-              subtitle="This month"
-              number="3,400"
+              title="Purchase Count"
+              subtitle="Prev Year"
+              number={this.state.pct2014}
               color="secondary"
               progress={{
-                value: 90,
-                label: 'Last month',
+                value: this.state.pctPercent,
+                label: 'This Year',
               }}
             />
           </Col>
@@ -230,6 +259,16 @@ class DashboardPage extends React.Component {
         </CardGroup>
 
         <Row>
+          <Col>
+              <Card>
+                <CardHeader>SubCategory Sales Chart</CardHeader>
+                <CardBody>
+                  <SubCategory_Sales_Chart/>
+                </CardBody>
+              </Card>
+          </Col>
+        </Row>
+        <Row>
           <Col md="6" sm="12" xs="12">
             <Card>
               <CardHeader>Category_cumPurchase</CardHeader>
@@ -238,6 +277,7 @@ class DashboardPage extends React.Component {
               </CardBody>
             </Card>
           </Col>
+          
 
           <Col md="6" sm="12" xs="12">
             <Card>
