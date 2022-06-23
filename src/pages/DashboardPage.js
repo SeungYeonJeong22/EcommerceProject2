@@ -44,24 +44,19 @@ import {
 } from 'reactstrap';
 import { getColor } from 'utils/colors';
 import {
-  // Monthly_PS_Chart,
-  // CohortChart,
   Profit,
   Category_cumPurchase,
   Segment_orderCount,
   NewUser,
   SankeyChart,
+  SankeyChart2,
   purchaseCount,
   SubCategory_Sales_Chart,
+  Vip_subCategory_Chart,
 } from '../demos/echartjs2';
 import {
-  // Profit,
-  // NewUser,
   Monthly_PS_Chart,
   CohortChart,
-  // Category_cumPurchase,
-  // Segment_orderCount,
-  // SankeyChart,
 } from '../demos/echartjs'
 
 const today = new Date();
@@ -137,11 +132,11 @@ class DashboardPage extends React.Component {
     return (
       <Page
         className="DashboardPage"
-        title="Dashboard"
-        breadcrumbs={[{ name: 'Dashboard', active: true }]}
+        title="EcommerceProject"
+        breadcrumbs={[{ name: 'EcommerceProject', active: true }]}
       >
         <Row>
-          <Col lg={3} md={6} sm={6} xs={12}>
+          <Col lg={4} md={6} sm={6} xs={12}>
             <NumberWidget
               title="Total Sales"
               subtitle='Prev Year'
@@ -154,7 +149,7 @@ class DashboardPage extends React.Component {
             />
           </Col>
 
-          <Col lg={3} md={6} sm={6} xs={12}>
+          <Col lg={4} md={6} sm={6} xs={12}>
             <NumberWidget
               title="Purchase Count"
               subtitle="Prev Year"
@@ -167,28 +162,15 @@ class DashboardPage extends React.Component {
             />
           </Col>
 
-          <Col lg={3} md={6} sm={6} xs={12}>
+          <Col lg={4} md={6} sm={6} xs={12}>
             <NumberWidget
-              title="This Year New Users"
+              title="New Users"
               subtitle="Prev Year"
               number= {this.state.thisYearCnt}
               color="secondary"
               progress={{
                 value: this.state.percent,
                 label: 'This Year',
-              }}
-            />
-          </Col>
-
-          <Col lg={3} md={6} sm={6} xs={12}>
-            <NumberWidget
-              title="Bounce Rate"
-              subtitle="This month"
-              number="38%"
-              color="secondary"
-              progress={{
-                value: 60,
-                label: 'Last month',
               }}
             />
           </Col>
@@ -225,6 +207,18 @@ class DashboardPage extends React.Component {
               </Card>
           </Col>
         </Row>
+
+        {/* <Row>
+          <Col>
+              <Card>
+                <CardHeader>2011 Customer</CardHeader>
+                <CardBody>
+                  <Vip_subCategory_Chart/>
+                </CardBody>
+              </Card>
+          </Col>
+        </Row> */}
+
         <Row>
           <Col md="6" sm="12" xs="12">
             <Card>
@@ -246,12 +240,23 @@ class DashboardPage extends React.Component {
           </Col>
         </Row>
 
-        <Row>
+        {/* <Row>
           <Col>
             <Card>
               <CardHeader>SankeyChart</CardHeader>
               <CardBody>
                 <SankeyChart />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row> */}
+
+        <Row>
+          <Col>
+            <Card>
+              <CardHeader>SankeyChart</CardHeader>
+              <CardBody>
+                <SankeyChart2 />
               </CardBody>
             </Card>
           </Col>

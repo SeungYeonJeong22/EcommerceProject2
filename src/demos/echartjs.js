@@ -100,7 +100,7 @@ export function Monthly_PS_Chart(){
     
     const colors = ['#5470C6', '#91CC75'];    
     const options = {   
-        color: colors,
+        color: ['#91CC75', '#5470C6'],
         tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -112,7 +112,7 @@ export function Monthly_PS_Chart(){
         left : '15%'
         },
         legend: {
-            data: ['Purchase Count', 'Sales']
+            data: ['Sales', 'Purchase Count']
         },
         xAxis: [
         {
@@ -132,7 +132,7 @@ export function Monthly_PS_Chart(){
             axisLine: {
             show: true,
             lineStyle: {
-                color: colors[0]
+                color: colors[1]
             }
             },
             axisLabel: {
@@ -147,7 +147,7 @@ export function Monthly_PS_Chart(){
             axisLine: {
             show: true,
             lineStyle: {
-                color: colors[1]
+                color: colors[0]
             }
             },
             axisLabel: {
@@ -158,12 +158,12 @@ export function Monthly_PS_Chart(){
         series: [
         {
             name: 'Purchase Count',
-            type: 'bar',
+            type: 'line',
             data: purchase
         },
         {
             name: 'Sales',
-            type: 'line',
+            type: 'bar',
             yAxisIndex: 1,
             data: sales
         }
@@ -253,7 +253,7 @@ export function CohortChart(){
             data: retention,
             label: {
               show: true,
-              fontSize: "8"
+              fontSize: "10"
             },
             emphasis: {
               itemStyle: {

@@ -243,7 +243,7 @@ export class SubCategory_Sales_Chart extends Component{
   bb = []
   cc =[]
 
-  colors = ['#5470C6', '#91CC75'];
+  colors = ['#5470C6','#91CC75'];
   options11 = {
       color: this.colors,
       tooltip: {
@@ -253,7 +253,7 @@ export class SubCategory_Sales_Chart extends Component{
           }
       },
       legend: {
-          data: ['Purchase Count', 'Sales']
+          data: ['Sales', 'Purchase Count']
       },
       xAxis: [
           {
@@ -261,7 +261,7 @@ export class SubCategory_Sales_Chart extends Component{
               axisTick: {alignWithLabel: true},
               data: this.aa,
               axisLabel : {
-                fontSize: '9'
+                fontSize: '8'
               }
           }
       ],
@@ -274,7 +274,7 @@ export class SubCategory_Sales_Chart extends Component{
           axisLine: {
               show: true,
               lineStyle: {
-              color: this.colors[0]
+              color: this.colors[1]
               }
           },
           axisLabel: {
@@ -290,7 +290,7 @@ export class SubCategory_Sales_Chart extends Component{
           axisLine: {
               show: true,
               lineStyle: {
-              color: this.colors[1]
+              color: this.colors[0]
               }
           },
           axisLabel: {
@@ -300,17 +300,17 @@ export class SubCategory_Sales_Chart extends Component{
       }
   ],
   series: [
+    {
+      name: 'Sales',
+      type: 'bar',
+      yAxisIndex: 1,
+      data: this.cc
+  },
       {
           name: 'Purchase Count',
           type: 'bar',
           data: this.bb
       },
-      {
-          name: 'Sales',
-          type: 'bar',
-          yAxisIndex: 1,
-          data: this.cc
-      }
       ]
   };
 
@@ -333,8 +333,130 @@ export class SubCategory_Sales_Chart extends Component{
             this.setState({orderMonth : order, purchase:purc, sales:sal})
     
             this.options11.xAxis[0].data = order
-            this.options11.series[0].data = purc
-            this.options11.series[1].data = sal
+            this.options11.series[1].data = purc
+            this.options11.series[0].data = sal
+    
+            this.setState({option : this.options11})
+        })
+      }
+
+  render(){
+      return (
+          <ECharts
+                  option={this.state.option}
+            opts={{ renderer: 'svg', width: 'auto', height: 'auto' }}
+          />
+        );
+  }
+}
+
+export class Vip_subCategory_Chart extends Component{
+  constructor(props){
+      super(props)
+      this.state = {
+          orderMonth : ['11','22','33','44','55'],
+          purchase : [1,2,3,4,5],
+          sales : [6,7,8,9,0],
+          option : {}
+      }
+  }
+
+  aa = []
+  bb = []
+  cc =[]
+
+  colors = ['#5470C6', '#91CC75'];
+  options11 = {
+    color: this.colors,
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+    legend: {
+        data: ['Sales', 'Purchase Count']
+    },
+    xAxis: [
+        {
+            type: 'category',
+            axisTick: {alignWithLabel: true},
+            data: this.aa,
+            axisLabel : {
+              fontSize: '8'
+            }
+        }
+    ],
+    yAxis: [
+        {
+        type: 'value',
+        name: 'Purchase Count',
+        position: 'right',
+        alignTicks: true,
+        axisLine: {
+            show: true,
+            lineStyle: {
+            color: this.colors[1]
+            }
+        },
+        axisLabel: {
+            formatter: '{value}',
+            fontSize: '10'
+        }
+        },
+        {
+        type: 'value',
+        name: 'Sales',
+        position: 'left',
+        alignTicks: true,
+        axisLine: {
+            show: true,
+            lineStyle: {
+            color: this.colors[0]
+            }
+        },
+        axisLabel: {
+            formatter: '{value}',
+            fontSize: '9'
+        }
+    }
+],
+series: [
+  {
+    name: 'Sales',
+    type: 'bar',
+    yAxisIndex: 1,
+    data: this.cc
+},
+    {
+        name: 'Purchase Count',
+        type: 'bar',
+        data: this.bb
+    },
+    ]
+  };
+
+  componentDidMount()
+  {
+        fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+          method: "POST",
+          headers: {
+          "Content-Type" : "application/json",
+          },
+          body: "vip_subCategory_sql",
+        })
+        .then( (response)=> response.json() )
+        .then( (rdata)=>{
+          //   console.log("rdata : ", rdata)
+            let order = rdata.map(data => data['Sub-Category'])
+            let purc = rdata.map(data => data['Order_cnt'])
+            let sal = rdata.map(data => data['Total_Sales'])
+
+            this.setState({orderMonth : order, purchase:purc, sales:sal})
+    
+            this.options11.xAxis[0].data = order
+            this.options11.series[1].data = purc
+            this.options11.series[0].data = sal
     
             this.setState({option : this.options11})
         })
@@ -506,7 +628,7 @@ export class Category_cumPurchase extends Component{
 
   options11 = {
     title: {
-      text: 'Categorical Cumulative Purchase Count',
+      // text: 'Categorical Cumulative Purchase Count',
     //   subtext: 'Fake Data',
       left: 'center'
     },
@@ -658,6 +780,11 @@ export class Segment_orderCount extends Component{
   ];
 
   options11 = {
+    // title: {
+    //   text: 'Segment Order Count',
+    // //   subtext: 'Fake Data',
+    //   left: 'center'
+    // },
     series: {
       type: 'sunburst',
       data: this.data,
@@ -737,6 +864,8 @@ export class Segment_orderCount extends Component{
             var set = new Set(subCategory)
             subCategory = [...set];
 
+            // console.log("subCategory : ", subCategory)
+
             this.setState({segment:segment, category:category, subCategory:subCategory, orderCount:orderCount})
 
             var data = []
@@ -755,7 +884,7 @@ export class Segment_orderCount extends Component{
                   idxCnt+=1
                 }
               
-                for (var k=change_categoryIdx[idxCnt-1]; k<change_categoryIdx[idxCnt]; k++){
+                for (var k=change_categoryIdx[idxCnt-1]+1; k<=change_categoryIdx[idxCnt]; k++){
                   if("children" in data[i]['children'][j]){
                     data[i]['children'][j]['children'].push(this.createChildren(subCategory[k], orderCount[cnt]))
                   }else{
@@ -783,6 +912,13 @@ export class Segment_orderCount extends Component{
 
   createChildren = (name, value=0) => {
     var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+    if(name == "Office Supplies"){
+      randColor = "#91CC75"
+    }else if(name == "Technology"){
+      randColor = "#FAC858"
+    }else if(name == "Furniture"){
+      randColor = "#5470C6"
+    }
 
     if(value !== 0){
       var child = {
@@ -980,6 +1116,199 @@ export class SankeyChart extends Component{
         source: segment[i],
         target: category[i],
         value: sumQuantity[i]
+      })
+    }
+
+    return links
+  }
+
+  render(){
+      return (
+        <ECharts
+                option={this.state.option}
+          opts={{ renderer: 'svg', width: 'auto', height: 'auto' }}
+        />
+    );
+  }
+};
+
+export class SankeyChart2 extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+        custID :[],
+        fpc    :[],
+        spc    :[],
+        option : {}
+    }
+  }
+
+  colors = [
+    '#da0d68',
+    '#975e6d',
+    '#e0719c',
+    '#f99e1c',
+    '#ef5a78',
+    '#f7f1bd',
+    '#da1d23',
+    '#dd4c51',
+    '#3e0317',
+    '#e62969',
+    '#6569b0',
+    '#ef2d36',
+    '#c94a44',
+    '#b53b54',
+    '#a5446f',
+    '#dd4c51',
+    '#f2684b',
+    '#e73451',
+    '#e65656',
+    '#f89a1c',
+    '#aeb92c',
+    '#4eb849',
+    '#f68a5c',
+    '#baa635',
+    '#f7a128',
+    '#f26355',
+    '#e2631e',
+    '#fde404',
+    '#7eb138',
+    '#ebb40f',
+    '#e1c315',
+    '#9ea718',
+    '#94a76f',
+    '#d0b24f',
+    '#8eb646',
+    '#faef07',
+    '#c1ba07',
+    '#b09733',
+    '#8f1c53',
+    '#b34039',
+    '#ba9232',
+    '#8b6439',
+    '#187a2f',
+    '#a2b029',
+    '#718933',
+    '#3aa255',
+    '#a2bb2b',
+    '#62aa3c',
+    '#03a653',
+    '#038549',
+    '#28b44b',
+  ];
+
+  data = []
+  options11 = {
+    title: {
+      left: 'center'
+    },
+    backgroundColor: '#FFFFFF',
+    series: [
+      {
+        type: 'sankey',
+        left: 50.0,
+        top: 20.0,
+        right: 150.0,
+        bottom: 25.0,
+        data: 0,
+        links: 0
+      }
+    ]          
+  };
+
+  componentDidMount()
+  {
+    fetch( 'https://49sukr7ld9.execute-api.ap-northeast-2.amazonaws.com/default12/API_Gateway_lambda', {
+      method: "POST",
+      headers: {
+      "Content-Type" : "application/json",
+      },
+      body: "sankeyChart_purchase_trend",
+    })
+    .then( (response)=> response.json() )
+    .then( (rdata)=>{
+        let custID     = rdata.map(data =>  data['Customer ID'])
+        let fpc        = rdata.map(data => data['First Purchase Category'])
+        let spc        = rdata.map(data => data['Second Purchase Category'])
+        
+
+        let createD = this.createData(custID, fpc, spc);
+        let createL = this.createLink(custID, fpc, spc)
+
+        this.options11.series[0].data=createD
+        this.options11.series[0].links=createL
+
+        this.setState({custID:custID, fpc:fpc, spc:spc})
+        
+        this.setState({option : this.options11})
+    })
+  }
+
+  createData = (custID=null, fpc=null, spc=null) => {
+    var t = new Set(custID)
+    custID = [...t];
+
+    var t = new Set(fpc)
+    fpc = [...t];
+
+    var t = new Set(spc)
+    spc = [...t];
+
+    var data = []
+    for(var i=0; i < custID.length; i++){
+      var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+      // console.log("custID : ", custID[i])
+      data.push({
+        name: custID[i],
+        itemStyle:{
+          color: randColor,
+          borderColor: randColor
+        }
+      })
+    }
+
+    for(var i=0; i < fpc.length; i++){
+      // console.log("fpc : ", fpc[i])
+      var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];      
+      data.push({
+        name: fpc[i],
+        itemStyle:{
+          color: randColor,
+          borderColor: randColor
+        }
+      })
+    }
+
+    for(var i=0; i < spc.length; i++){
+      // console.log("spc : ", spc[i])
+      var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+      data.push({
+        name: spc[i],
+        itemStyle:{
+          color: randColor,
+          borderColor: randColor
+        }
+      })
+    }
+
+    return data
+  }
+
+  createLink = (custID=null, fpc=null, spc=null) => {
+    var links = []
+    for(var i=0; i<fpc.length; i++){
+      links.push({
+        source: custID[i],
+        target: fpc[i],
+        value: 1
+      }) 
+    }
+
+    for(var i=0; i<spc.length; i++){
+      links.push({
+        source: fpc[i],
+        target: spc[i],
+        value: 1
       })
     }
 
