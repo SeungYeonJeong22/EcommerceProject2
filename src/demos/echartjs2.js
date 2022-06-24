@@ -61,15 +61,17 @@ export function NewUser(){
   })
   .then( (response)=> response.json() )
   .then( (rdata)=>{
-    let year = rdata.map(data => data['FirstPurchaseDate'])
+    let FP = rdata.map(data => data['FP'])
+    let cntCustID = rdata.map(data => data['cntCust'])
 
     var prevYearCnt = 0
     var thisYearCnt = 0
-    year.forEach(val => {
-      if(val == "2013"){
-        prevYearCnt += 1
-      }else{
-        thisYearCnt += 1
+
+    FP.forEach((val, idx) => {
+      if(val == '2013'){
+        prevYearCnt = cntCustID[idx]
+      }else if(val == '2014'){
+        thisYearCnt = cntCustID[idx]
       }
     })
 
@@ -912,13 +914,12 @@ export class Segment_orderCount extends Component{
 
   createChildren = (name, value=0) => {
     var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];
-    if(name == "Office Supplies"){
-      randColor = "#91CC75"
-    }else if(name == "Technology"){
-      randColor = "#FAC858"
-    }else if(name == "Furniture"){
-      randColor = "#5470C6"
-    }
+    if(name == "Office Supplies"){randColor = "#91CC75"}
+    else if(name == "Technology"){randColor = "#FAC858"}
+    else if(name == "Furniture"){randColor = "#5470C6"}
+    else if(name == 'Consumer'){randColor = "#F26355"}
+    else if(name == 'Corporate'){randColor = "#62AA3C"}
+    else if(name == 'Home Office'){randColor = "#FAC858"}
 
     if(value !== 0){
       var child = {
@@ -1078,6 +1079,9 @@ export class SankeyChart extends Component{
 
     for(var i=0; i < segment.length; i++){
       var randColor = this.colors[Math.floor(Math.random() * this.colors.length)];      
+      if(segment[i] == 'Consumer'){randColor = "#F26355"}
+      else if(segment[i] == 'Corporate'){randColor = "#62AA3C"}
+      else if(segment[i] == 'Home Office'){randColor = "#FAC858"}
       data.push({
         name: segment[i],
         itemStyle:{

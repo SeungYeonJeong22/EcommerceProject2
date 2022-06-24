@@ -67,7 +67,7 @@ const sidebarBackground = {
 
 const navContents = [
   // { to: '/typography', name: 'typography', exact: false, Icon: MdTextFields },
-  { to: '/tables', name: 'tables', exact: false, Icon: MdBorderAll },
+  { to: '/tables', name: 'GS Data', exact: false, Icon: MdBorderAll },
 ];
 
 // const pageContents = [
@@ -81,7 +81,7 @@ const navContents = [
 // ];
 
 const navItems = [
-  { to: '/', name: 'dashboard', exact: true, Icon: MdDashboard },
+  { to: '/', name: 'GS Dashboard', exact: true, Icon: MdDashboard },
   // { to: '/cards', name: 'cards', exact: false, Icon: MdWeb },
   // { to: '/charts', name: 'charts', exact: false, Icon: MdInsertChart },
   // { to: '/widgets', name: 'widgets', exact: false, Icon: MdWidgets },
@@ -121,7 +121,7 @@ class Sidebar extends React.Component {
                 alt=""
               />
               <span className="text-white">
-                Second <FaGithub />
+                Team Second <FaGithub />
               </span>
             </SourceLink>
           </Navbar>

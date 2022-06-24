@@ -132,8 +132,8 @@ class DashboardPage extends React.Component {
     return (
       <Page
         className="DashboardPage"
-        title="EcommerceProject"
-        breadcrumbs={[{ name: 'EcommerceProject', active: true }]}
+        title="Global Store"
+        // breadcrumbs={[{ name: 'EcommerceProject', active: true }]}
       >
         <Row>
           <Col lg={4} md={6} sm={6} xs={12}>
@@ -240,7 +240,7 @@ class DashboardPage extends React.Component {
           </Col>
         </Row>
 
-        {/* <Row>
+        <Row>
           <Col>
             <Card>
               <CardHeader>SankeyChart</CardHeader>
@@ -249,9 +249,9 @@ class DashboardPage extends React.Component {
               </CardBody>
             </Card>
           </Col>
-        </Row> */}
+        </Row>
 
-        <Row>
+        {/* <Row>
           <Col>
             <Card>
               <CardHeader>SankeyChart</CardHeader>
@@ -260,9 +260,9 @@ class DashboardPage extends React.Component {
               </CardBody>
             </Card>
           </Col>
-        </Row>
+        </Row> */}
 
-        <Row>
+        {/* <Row>
           <Col>
             <Card inverse className="bg-gradient-primary">
               <CardHeader className="bg-gradient-primary">
@@ -273,7 +273,7 @@ class DashboardPage extends React.Component {
               </CardBody>
             </Card>
           </Col>
-        </Row>
+        </Row> */}
 
       </Page>
     );
